@@ -200,13 +200,13 @@ button{
 
 <body>
 
-<h1>🧠 Sistemas de Búsqueda IA</h1>
+<h1> Sistemas de Búsqueda IA</h1>
 
 <div class="container">
 
 <!-- BFS -->
 <div class="card">
-<h2>🔵 BFS</h2>
+<h2> BFS</h2>
 <input id="bfs_i" placeholder="4,2,3,1">
 <input id="bfs_o" placeholder="1,2,3,4">
 <button class="bfs" onclick="runBFS()">Resolver</button>
@@ -215,7 +215,7 @@ button{
 
 <!-- DFS -->
 <div class="card">
-<h2>🔴 DFS</h2>
+<h2> DFS</h2>
 <input id="dfs_i" placeholder="4,2,3,1">
 <input id="dfs_o" placeholder="1,2,3,4">
 <button class="dfs" onclick="runDFS()">Resolver</button>
@@ -224,7 +224,7 @@ button{
 
 <!-- VUELOS -->
 <div class="card">
-<h2>✈️ Vuelos</h2>
+<h2> Vuelos</h2>
 <input id="v_i" placeholder="Origen">
 <input id="v_o" placeholder="Destino">
 <button class="v" onclick="runV()">Buscar</button>
