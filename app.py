@@ -75,7 +75,7 @@ def DFS(estado_inicial, solucion):
 
 
 # ======================================================
-# ✈️ VUELOS
+# ✈️ VUELOS (CORREGIDO REALMENTE)
 # ======================================================
 def DFS_prof_iter(nodo, solucion, conexiones):
 
@@ -84,54 +84,58 @@ def DFS_prof_iter(nodo, solucion, conexiones):
         if limite < 0:
             return None
 
-        visitados.append(nodo.get_datos())
+        estado = nodo.get_datos()
 
-        if nodo.get_datos() == solucion:
+        if estado == solucion:
             return nodo
+
+        visitados.add(estado)
 
         hijos = []
 
-        for un_hijo in conexiones.get(nodo.get_datos(), []):
-            hijo = Nodo(un_hijo)
-            hijo.set_padre(nodo)
-
+        for un_hijo in conexiones.get(estado, []):
             if un_hijo not in visitados:
+                hijo = Nodo(un_hijo)
+                hijo.set_padre(nodo)
                 hijos.append(hijo)
 
         nodo.set_hijos(hijos)
 
-        for h in nodo.get_hijos():
-            sol = buscar_rec(h, solucion, visitados, limite - 1)
+        for h in hijos:
+            sol = buscar_rec(h, solucion, visitados.copy(), limite - 1)
             if sol:
                 return sol
 
         return None
 
-    for limite in range(0, 50):
-        sol = buscar_rec(nodo, solucion, [], limite)
+    for limite in range(1, 10):
+        sol = buscar_rec(nodo, solucion, set(), limite)
         if sol:
             return sol
 
     return None
 
 
+# ======================================================
+# 🌍 GRAFO (CAMBIO IMPORTANTE: ORDEN FIJO, NO SET)
+# ======================================================
 conexiones = {
-    'Jiloyork': {'Celaya', 'CDMX', 'Querétaro'},
-    'CDMX': {'Querétaro', 'Celaya'},
-    'Sonora': {'Zacatecas', 'Sinaloa'},
-    'Guanajuato': {'Aguascalientes'},
-    'Oaxaca': {'Querétaro'},
-    'Sinaloa': {'Celaya', 'Sonora', 'Jiloyork'},
-    'Querétaro': {'Tamaulipas', 'Zacatecas', 'Sinaloa', 'Jiloyork', 'Oaxaca'},
-    'Celaya': {'Jiloyork', 'Sinaloa'},
-    'Zacatecas': {'Sonora', 'Monterrey', 'Querétaro'},
-    'Monterrey': {'Zacatecas','Sinaloa'},
-    'Tamaulipas': {'Querétaro'}
+    'Jiloyork': ['Celaya', 'CDMX', 'Querétaro'],
+    'CDMX': ['Querétaro', 'Celaya'],
+    'Sonora': ['Zacatecas', 'Sinaloa'],
+    'Guanajuato': ['Aguascalientes'],
+    'Oaxaca': ['Querétaro'],
+    'Sinaloa': ['Celaya', 'Sonora', 'Jiloyork'],
+    'Querétaro': ['Tamaulipas', 'Zacatecas', 'Sinaloa', 'Jiloyork', 'Oaxaca'],
+    'Celaya': ['Jiloyork', 'Sinaloa'],
+    'Zacatecas': ['Sonora', 'Monterrey', 'Querétaro'],
+    'Monterrey': ['Zacatecas','Sinaloa'],
+    'Tamaulipas': ['Querétaro']
 }
 
 
 # ======================================================
-# 🧠 UI ÚNICA (SIN REFRESH)
+# 🧠 UI
 # ======================================================
 @app.route("/")
 def index():
@@ -188,6 +192,7 @@ button{
     margin-top:10px;
     font-size:14px;
     color:#38bdf8;
+    white-space:pre-wrap;
 }
 </style>
 
@@ -277,7 +282,7 @@ async function runV(){
 
 
 # ======================================================
-# 🔵 API BFS
+# API BFS
 # ======================================================
 @app.route("/bfs", methods=["POST"])
 def bfs_api():
@@ -296,11 +301,11 @@ def bfs_api():
         nodo = nodo.get_padre()
 
     camino.reverse()
-    return jsonify({"result":camino})
+    return jsonify({"result": camino})
 
 
 # ======================================================
-# 🔴 API DFS
+# API DFS
 # ======================================================
 @app.route("/dfs", methods=["POST"])
 def dfs_api():
@@ -319,11 +324,11 @@ def dfs_api():
         nodo = nodo.get_padre()
 
     camino.reverse()
-    return jsonify({"result":camino})
+    return jsonify({"result": camino})
 
 
 # ======================================================
-# ✈️ API VUELOS
+# API VUELOS
 # ======================================================
 @app.route("/vuelos", methods=["POST"])
 def vuelos_api():
@@ -332,7 +337,7 @@ def vuelos_api():
     nodo = DFS_prof_iter(Nodo(data["i"]), data["o"], conexiones)
 
     if not nodo:
-        return jsonify({"result":"No ruta"})
+        return jsonify({"result":"No ruta encontrada"})
 
     ruta = []
     while nodo.get_padre():
